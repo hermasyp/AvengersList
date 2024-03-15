@@ -5,11 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.catnip.avengerslist.R
+import com.catnip.avengerslist.data.datasource.AvengersDataSource
+import com.catnip.avengerslist.data.datasource.AvengersDataSourceImpl
+import com.catnip.avengerslist.data.model.Avenger
 import com.catnip.avengerslist.databinding.FragmentAvengersListBinding
+import com.catnip.avengerslist.presentation.avengerdetail.AvengerDetailFragment
+import com.catnip.avengerslist.presentation.avengerslist.adapter.AvengersAdapter
+import com.catnip.avengerslist.presentation.avengerslist.adapter.OnItemClickedListener
 
 class AvengersListFragment : Fragment() {
 
     private lateinit var binding: FragmentAvengersListBinding
+    private var adapter: AvengersAdapter? = null
+    private val dataSource: AvengersDataSource by lazy { AvengersDataSourceImpl() }
+    private var isUsingGridMode: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -19,4 +34,46 @@ class AvengersListFragment : Fragment() {
         binding = FragmentAvengersListBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindAvengersList(isUsingGridMode)
+        setClickAction()
+    }
+
+    private fun setClickAction() {
+        binding.btnChangeListMode.setOnClickListener {
+            isUsingGridMode = !isUsingGridMode
+            setButtonText(isUsingGridMode)
+            bindAvengersList(isUsingGridMode)
+        }
+    }
+
+    private fun setButtonText(usingGridMode: Boolean) {
+        binding.btnChangeListMode.setText(if (usingGridMode) R.string.text_list_mode else R.string.text_grid_mode)
+    }
+
+    private fun bindAvengersList(isUsingGrid: Boolean) {
+        val listMode = if (isUsingGrid) AvengersAdapter.MODE_GRID else AvengersAdapter.MODE_LIST
+        adapter = AvengersAdapter(
+            listMode = listMode,
+            listener = object : OnItemClickedListener<Avenger> {
+                override fun onItemClicked(item: Avenger) {
+                    //navigate to detail
+                    navigateToDetail(item)
+                }
+            })
+        binding.rvAvengerList.apply {
+            adapter = this@AvengersListFragment.adapter
+            layoutManager = GridLayoutManager(requireContext(), if (isUsingGrid) 2 else 1)
+        }
+        adapter?.submitData(dataSource.getAvengerMembers())
+    }
+
+    private fun navigateToDetail(item: Avenger) {
+        val navController = findNavController()
+        val bundle = bundleOf(Pair(AvengerDetailFragment.EXTRAS_ITEM, item))
+        navController.navigate(R.id.action_avengersListFragment_to_avengerDetailFragment, bundle)
+    }
+
 }

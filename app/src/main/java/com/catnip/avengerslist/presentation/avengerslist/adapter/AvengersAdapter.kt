@@ -15,7 +15,10 @@ import com.catnip.avengerslist.databinding.ItemAvengerGridBinding
 Written with love by Muhammad Hermas Yuda Pamungkas
 Github : https://github.com/hermasyp
  **/
-class AvengersAdapter(private val listMode: Int = MODE_LIST) :
+class AvengersAdapter(
+    private val listener: OnItemClickedListener<Avenger>,
+    private val listMode: Int = MODE_LIST
+) :
     RecyclerView.Adapter<ViewHolder>() {
 
     companion object {
@@ -38,6 +41,10 @@ class AvengersAdapter(private val listMode: Int = MODE_LIST) :
         }
     )
 
+    fun submitData(data: List<Avenger>) {
+        asyncDataDiffer.submitList(data)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //membuat instance of view holder
         return if (listMode == MODE_GRID) AvengerGridItemViewHolder(
@@ -45,14 +52,14 @@ class AvengersAdapter(private val listMode: Int = MODE_LIST) :
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            )
+            ), listener
         ) else {
             AvengerListItemViewHolder(
                 ItemAvengerBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
-                )
+                ), listener
             )
         }
     }
@@ -63,4 +70,8 @@ class AvengersAdapter(private val listMode: Int = MODE_LIST) :
         if (holder !is ViewHolderBinder<*>) return
         (holder as ViewHolderBinder<Avenger>).bind(asyncDataDiffer.currentList[position])
     }
+}
+
+interface OnItemClickedListener<T> {
+    fun onItemClicked(item: T)
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/avengersListFragment">
+
+    <fragment
+        android:id="@+id/avengersListFragment"
+        android:name="com.catnip.avengerslist.presentation.avengerslist.AvengersListFragment"
+        android:label="fragment_avengers_list"
+        tools:layout="@layout/fragment_avengers_list" >
+        <action
+            android:id="@+id/action_avengersListFragment_to_avengerDetailFragment"
+            app:destination="@id/avengerDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/avengerDetailFragment"
+        android:name="com.catnip.avengerslist.presentation.avengerdetail.AvengerDetailFragment"
+        android:label="fragment_avenger_detail"
+        tools:layout="@layout/fragment_avenger_detail" >
+    </fragment>
+</navigation>

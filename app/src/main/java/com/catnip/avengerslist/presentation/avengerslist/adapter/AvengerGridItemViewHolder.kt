@@ -13,7 +13,8 @@ Written with love by Muhammad Hermas Yuda Pamungkas
 Github : https://github.com/hermasyp
  **/
 class AvengerGridItemViewHolder(
-    private val binding: ItemAvengerGridBinding
+    private val binding: ItemAvengerGridBinding,
+    private val listener: OnItemClickedListener<Avenger>
 ) : ViewHolder(binding.root), ViewHolderBinder<Avenger> {
 
     override fun bind(item: Avenger) {
@@ -23,6 +24,9 @@ class AvengerGridItemViewHolder(
                 error(R.mipmap.ic_launcher)
             }
             binding.tvAvengerName.text = it.name
+            itemView.setOnClickListener {
+                listener.onItemClicked(item)
+            }
         }
     }
 }
